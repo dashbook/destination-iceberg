@@ -1,0 +1,21 @@
+[package]
+name = "destination-iceberg"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+arrow = { workspace = true }
+async-trait = { workspace = true }
+object_store = { workspace = true }
+dashtool-common = { workspace = true }
+futures = { workspace = true }
+iceberg-rust = { workspace = true }
+jsonschema = "0.17"
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+airbyte-rs = { workspace = true }
+anyhow = { workspace = true }
+chrono = "0.4"
+tracing = { workspace = true }
+tracing-futures = { workspace = true }

@@ -1,0 +1,25 @@
+[package]
+name = "destination-iceberg-sql"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+airbyte-rs = { workspace = true }
+anyhow = { workspace = true }
+async-trait = { workspace = true }
+clap = { version = "4", features = ["derive"] }
+dashtool-common = { workspace = true }
+futures = { workspace = true }
+iceberg-sql-catalog = { git = "https://github.com/jankaul/iceberg-rust" }
+sqlx = { version = "0.7.4", features = ["runtime-tokio", "tls-rustls", "any", "sqlite", "postgres", "mysql"], default-features = false }
+iceberg-rust = { workspace = true }
+object_store = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+destination-iceberg = { path = "../destination-iceberg/" }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true, features = ["env-filter"] }
+
+[dev-dependencies]
+tempfile = "3.8.1"
