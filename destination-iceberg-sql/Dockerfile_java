@@ -1,0 +1,7 @@
+FROM rust:bookworm AS builder
+WORKDIR /usr/src
+COPY . .
+RUN cargo install --path ./destination-iceberg-sql
+FROM eclipse-temurin:17-jre-jammy
+COPY --from=builder /usr/local/cargo/bin/destination-iceberg-sql /usr/local/bin/destination-iceberg-sql
+CMD ["destination-iceberg-sql"]
