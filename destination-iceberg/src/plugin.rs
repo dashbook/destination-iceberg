@@ -1,6 +1,6 @@
 use std::{collections::HashMap, sync::Arc};
 
-use airbyte_rs::message::SyncMode;
+use airbyte_protocol::message::SyncMode;
 use async_trait::async_trait;
 use iceberg_rust::catalog::Catalog;
 use serde::{Deserialize, Serialize};

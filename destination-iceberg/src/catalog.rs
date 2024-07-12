@@ -1,10 +1,10 @@
 use std::{fs, sync::Arc};
 
-use airbyte_rs::message::{
+use airbyte_protocol::message::{
     AirbyteMessage, ConfiguredAirbyteCatalog, ConfiguredAirbyteStream, DestinationSyncMode,
     SyncMode,
 };
-use airbyte_rs::schema::{Compound, JsonSchema, Type};
+use airbyte_protocol::schema::{Compound, JsonSchema, Type};
 use anyhow::anyhow;
 use futures::{stream, StreamExt, TryStreamExt};
 use iceberg_rust::spec::partition::{PartitionField, PartitionSpec, Transform};

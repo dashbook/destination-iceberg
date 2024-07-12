@@ -4,7 +4,7 @@ use std::{
     sync::Arc,
 };
 
-use airbyte_rs::message::{AirbyteMessage, ConfiguredAirbyteCatalog};
+use airbyte_protocol::message::{AirbyteMessage, ConfiguredAirbyteCatalog};
 use anyhow::anyhow;
 use clap::Parser;
 use destination_iceberg::{
@@ -94,7 +94,7 @@ async fn main() -> Result<(), Error> {
 #[cfg(test)]
 mod tests {
     use crate::SqlDestinationPlugin;
-    use airbyte_rs::message::{AirbyteMessage, AirbyteStateMessage};
+    use airbyte_protocol::message::{AirbyteMessage, AirbyteStateMessage};
     use anyhow::{anyhow, Error, Ok};
     use destination_iceberg::catalog::configure_catalog;
     use destination_iceberg::ingest::ingest;

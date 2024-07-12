@@ -1,6 +1,6 @@
 use std::{collections::HashMap, sync::Arc};
 
-use airbyte_rs::message::{
+use airbyte_protocol::message::{
     AirbyteCatalog, AirbyteGlobalState, AirbyteStateMessage, AirbyteStreamState, StreamDescriptor,
 };
 use futures::{lock::Mutex, stream, StreamExt, TryStreamExt};

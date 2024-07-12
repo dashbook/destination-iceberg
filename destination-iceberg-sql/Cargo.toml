@@ -4,13 +4,13 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-airbyte-rs = { workspace = true }
+airbyte-protocol = { workspace = true }
 anyhow = { workspace = true }
 async-trait = { workspace = true }
 clap = { version = "4", features = ["derive"] }
 dashtool-common = { workspace = true }
 futures = { workspace = true }
-iceberg-sql-catalog = { git = "https://github.com/jankaul/iceberg-rust" }
+iceberg-sql-catalog = "0.5"
 sqlx = { version = "0.7.4", features = ["runtime-tokio", "tls-rustls", "any", "sqlite", "postgres", "mysql"], default-features = false }
 iceberg-rust = { workspace = true }
 object_store = { workspace = true }

@@ -1,4 +1,4 @@
-use airbyte_rs::schema::{Compound, Format, JsonSchema, Primitive, Type};
+use airbyte_protocol::schema::{Compound, Format, JsonSchema, Primitive, Type};
 use arrow::datatypes::{DataType, Field, Schema, SchemaBuilder, TimeUnit};
 
 use crate::error::Error;

@@ -1,6 +1,6 @@
 use std::{collections::HashMap, io::BufRead, sync::Arc};
 
-use airbyte_rs::message::{
+use airbyte_protocol::message::{
     AirbyteGlobalState, AirbyteMessage, AirbyteStateMessage, ConfiguredAirbyteCatalog,
     DestinationSyncMode, StreamDescriptor,
 };
