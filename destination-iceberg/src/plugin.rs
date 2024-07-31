@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use crate::error::Error;
 
 #[async_trait]
-pub trait DestinationPlugin {
+pub trait DestinationPlugin: Send + Sync {
     async fn catalog(&self) -> Result<Arc<dyn Catalog>, Error>;
     fn namespace(&self) -> Option<&str>;
     fn streams(&self) -> &HashMap<String, StreamConfig>;

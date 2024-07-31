@@ -21,6 +21,8 @@ pub enum Error {
     #[error(transparent)]
     FuturesChannel(#[from] futures::channel::mpsc::SendError),
     #[error(transparent)]
+    Join(#[from] tokio::task::JoinError),
+    #[error(transparent)]
     ObjectStore(#[from] object_store::Error),
     #[error(transparent)]
     Anyhow(#[from] anyhow::Error),

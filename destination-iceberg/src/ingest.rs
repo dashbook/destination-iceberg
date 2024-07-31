@@ -9,13 +9,14 @@ use arrow::{datatypes::Schema as ArrowSchema, error::ArrowError, json::ReaderBui
 use futures::{
     channel::mpsc::{unbounded, UnboundedReceiver, UnboundedSender},
     lock::Mutex,
-    stream, SinkExt, StreamExt, TryStreamExt,
+    SinkExt, StreamExt, TryStreamExt,
 };
 use iceberg_rust::{
     arrow::write::write_parquet_partitioned,
     catalog::{identifier::Identifier, tabular::Tabular},
 };
 
+use tokio::task::JoinSet;
 use tracing::{debug, debug_span, Instrument};
 
 use crate::{
@@ -38,7 +39,7 @@ pub async fn ingest(
             .map(|stream| {
                 (
                     StreamDescriptor::new(&stream.stream.name, stream.stream.namespace.as_deref()),
-                    stream,
+                    stream.clone(),
                 )
             })
             .collect(),
@@ -60,10 +61,10 @@ pub async fn ingest(
     let stream_states: Arc<Mutex<HashMap<_, serde_json::Value>>> =
         Arc::new(Mutex::new(HashMap::new()));
 
-    // Process messages for every stream
-    let handle = stream::iter(message_recievers.into_iter())
-        .map(Ok::<_, Error>)
-        .try_for_each_concurrent(None, |(stream, messages)| {
+    let mut set = JoinSet::new();
+
+    for (stream, messages) in message_recievers {
+        set.spawn({
             let plugin = plugin.clone();
             let schemas = schemas.clone();
             let global_state = global_state.clone();
@@ -223,6 +224,7 @@ pub async fn ingest(
             }
             .instrument(debug_span!("sync_stream"))
         });
+    }
 
     // Send messages to channel based on stream
     for line in input.lines() {
@@ -275,7 +277,9 @@ pub async fn ingest(
         sender.close_channel();
     }
 
-    handle.await?;
+    while let Some(res) = set.join_next().await {
+        res??;
+    }
 
     Ok(())
 }
