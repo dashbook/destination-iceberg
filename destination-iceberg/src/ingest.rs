@@ -273,6 +273,8 @@ pub async fn ingest(
         }
     }
 
+    debug!("Input stream finished.");
+
     for (_, sender) in message_senders {
         sender.close_channel();
     }
