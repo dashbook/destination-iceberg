@@ -8,7 +8,6 @@ use anyhow::anyhow;
 use arrow::{datatypes::Schema as ArrowSchema, error::ArrowError, json::ReaderBuilder};
 use futures::{
     channel::mpsc::{unbounded, UnboundedReceiver, UnboundedSender},
-    lock::Mutex,
     SinkExt, StreamExt, TryStreamExt,
 };
 use iceberg_rust::{
@@ -16,7 +15,7 @@ use iceberg_rust::{
     catalog::{identifier::Identifier, tabular::Tabular},
 };
 
-use tokio::task::JoinSet;
+use tokio::{sync::Mutex, task::JoinSet};
 use tracing::{debug, debug_span, Instrument};
 
 use crate::{
@@ -153,6 +152,8 @@ pub async fn ingest(
                     plugin.branch().as_deref(),
                 )
                 .await?;
+
+                debug!("Stream {} finished writing parquet files.", &stream.name);
 
                 if !files.is_empty() {
                     let transaction = match schema.destination_sync_mode {
