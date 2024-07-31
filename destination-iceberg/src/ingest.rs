@@ -15,7 +15,7 @@ use iceberg_rust::{
     catalog::{identifier::Identifier, tabular::Tabular},
 };
 
-use tokio::{sync::Mutex, task::JoinSet};
+use tokio::{sync::RwLock, task::JoinSet};
 use tracing::{debug, debug_span, Instrument};
 
 use crate::{
@@ -56,9 +56,9 @@ pub async fn ingest(
         })
         .unzip();
 
-    let global_state: Arc<Mutex<Option<AirbyteGlobalState>>> = Arc::new(Mutex::new(None));
-    let stream_states: Arc<Mutex<HashMap<_, serde_json::Value>>> =
-        Arc::new(Mutex::new(HashMap::new()));
+    let global_state: Arc<RwLock<Option<AirbyteGlobalState>>> = Arc::new(RwLock::new(None));
+    let stream_states: Arc<RwLock<HashMap<_, serde_json::Value>>> =
+        Arc::new(RwLock::new(HashMap::new()));
 
     let mut set = JoinSet::new();
 
@@ -169,7 +169,7 @@ pub async fn ingest(
                     }?;
 
                     let (shared_state, global_stream_state) = {
-                        let global_state = global_state.lock().await;
+                        let global_state = global_state.read().await;
                         if let Some(global) = global_state.as_ref() {
                             (
                                 global.shared_state.clone(),
@@ -185,7 +185,7 @@ pub async fn ingest(
                     };
 
                     let stream_state = {
-                        let stream_states = stream_states.lock().await;
+                        let stream_states = stream_states.read().await;
                         stream_states.get(&stream).cloned()
                     };
 
@@ -253,7 +253,7 @@ pub async fn ingest(
                         destination_stats: _,
                         source_stats: _,
                     } => {
-                        let mut state = global_state.lock().await;
+                        let mut state = global_state.write().await;
                         *state = Some(global.clone());
                     }
                     AirbyteStateMessage::Stream {
@@ -262,7 +262,7 @@ pub async fn ingest(
                         source_stats: _,
                     } => {
                         if let Some(stream_state) = &stream.stream_state {
-                            let mut stream_states = stream_states.lock().await;
+                            let mut stream_states = stream_states.write().await;
                             stream_states
                                 .insert(stream.stream_descriptor.clone(), stream_state.clone());
                         }
