@@ -6,6 +6,7 @@ use airbyte_protocol::message::{
 };
 use anyhow::anyhow;
 use arrow::{datatypes::Schema as ArrowSchema, error::ArrowError, json::ReaderBuilder};
+use async_lock::RwLock;
 use futures::{
     channel::mpsc::{unbounded, UnboundedReceiver, UnboundedSender},
     SinkExt, StreamExt, TryStreamExt,
@@ -15,7 +16,7 @@ use iceberg_rust::{
     catalog::{identifier::Identifier, tabular::Tabular},
 };
 
-use tokio::{sync::RwLock, task::JoinSet};
+use tokio::task::JoinSet;
 use tracing::{debug, debug_span, Instrument};
 
 use crate::{
