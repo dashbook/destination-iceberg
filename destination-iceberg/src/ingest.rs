@@ -9,6 +9,7 @@ use arrow::{datatypes::Schema as ArrowSchema, error::ArrowError, json::ReaderBui
 use async_lock::RwLock;
 use futures::{
     channel::mpsc::{unbounded, UnboundedReceiver, UnboundedSender},
+    lock::Mutex,
     SinkExt, StreamExt, TryStreamExt,
 };
 use iceberg_rust::{
@@ -58,8 +59,6 @@ pub async fn ingest(
         .unzip();
 
     let global_state: Arc<RwLock<Option<AirbyteGlobalState>>> = Arc::new(RwLock::new(None));
-    let stream_states: Arc<RwLock<HashMap<_, serde_json::Value>>> =
-        Arc::new(RwLock::new(HashMap::new()));
 
     let mut set = JoinSet::new();
 
@@ -68,8 +67,9 @@ pub async fn ingest(
             let plugin = plugin.clone();
             let schemas = schemas.clone();
             let global_state = global_state.clone();
-            let stream_states = stream_states.clone();
             async move {
+                let stream_state = Arc::new(Mutex::new(None));
+
                 let schema = schemas.get(&stream).ok_or(Error::NotFound(format!(
                     "Schema for stream {}",
                     &stream.name
@@ -105,18 +105,31 @@ pub async fn ingest(
                     return Err(Error::Unknown);
                 };
 
-                let table_schema = table
-                    .metadata()
-                    .current_schema(plugin.branch())?;
+                let table_schema = table.metadata().current_schema(plugin.branch())?;
 
                 let table_arrow_schema: Arc<ArrowSchema> =
                     Arc::new((table_schema.fields()).try_into()?);
 
                 let batches = messages
-                    .filter_map(|message| async move {
-                        match message {
-                            AirbyteMessage::Record { record } => Some(record),
-                            _ => None,
+                    .filter_map(|message| {
+                        let stream_state = stream_state.clone();
+                        async move {
+                            match message {
+                                AirbyteMessage::Record { record } => Some(record),
+                                AirbyteMessage::State { state } => match state {
+                                    AirbyteStateMessage::Stream {
+                                        stream,
+                                        destination_stats: _,
+                                        source_stats: _,
+                                    } => {
+                                        let mut stream_state = stream_state.lock().await;
+                                        *stream_state = stream.stream_state;
+                                        None
+                                    }
+                                    _ => None,
+                                },
+                                _ => None,
+                            }
                         }
                     })
                     // Check if record conforms to schema
@@ -158,12 +171,12 @@ pub async fn ingest(
 
                 if !files.is_empty() {
                     let transaction = match schema.destination_sync_mode {
-                        DestinationSyncMode::Overwrite => Ok(table
-                            .new_transaction(plugin.branch())
-                            .rewrite(files)),
-                        DestinationSyncMode::Append => Ok(table
-                            .new_transaction(plugin.branch())
-                            .append(files)),
+                        DestinationSyncMode::Overwrite => {
+                            Ok(table.new_transaction(plugin.branch()).rewrite(files))
+                        }
+                        DestinationSyncMode::Append => {
+                            Ok(table.new_transaction(plugin.branch()).append(files))
+                        }
                         DestinationSyncMode::AppendDedup => {
                             Err(Error::Invalid("Sync Mode".to_owned()))
                         }
@@ -185,19 +198,17 @@ pub async fn ingest(
                         }
                     };
 
-                    let stream_state = {
-                        let stream_states = stream_states.read().await;
-                        stream_states.get(&stream).cloned()
-                    };
-
-                    if let Some(state) = &stream_state {
-                        debug!("State of stream {}: {}", &stream.name, &state);
-                    }
                     if let Some(state) = &global_stream_state {
                         debug!("Global state of stream {}: {}", &stream.name, &state);
                     }
                     if let Some(state) = &shared_state {
                         debug!("Global state : {}", &state);
+                    }
+
+                    let stream_state = { stream_state.lock().await.clone() };
+
+                    if let Some(state) = &stream_state {
+                        debug!("State of stream {}: {}", &stream.name, &state);
                     }
 
                     let transaction = match shared_state {
@@ -264,11 +275,14 @@ pub async fn ingest(
                         destination_stats: _,
                         source_stats: _,
                     } => {
-                        if let Some(stream_state) = &stream.stream_state {
-                            let mut stream_states = stream_states.write().await;
-                            stream_states
-                                .insert(stream.stream_descriptor.clone(), stream_state.clone());
-                        }
+                        message_senders
+                            .get_mut(&stream.stream_descriptor)
+                            .ok_or(Error::Anyhow(anyhow!(
+                                "Stream {} not found.",
+                                &stream.stream_descriptor.name,
+                            )))?
+                            .send(message)
+                            .await?
                     }
                     _ => (),
                 },
