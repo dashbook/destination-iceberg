@@ -220,6 +220,8 @@ pub async fn ingest(
                     };
 
                     transaction.commit().await?;
+
+                    debug!("Stream {} finished table transaction.", &stream.name);
                 }
 
                 Ok(())
@@ -284,6 +286,8 @@ pub async fn ingest(
     while let Some(res) = set.join_next().await {
         res??;
     }
+
+    debug!("All tasks joined successfully.");
 
     Ok(())
 }
