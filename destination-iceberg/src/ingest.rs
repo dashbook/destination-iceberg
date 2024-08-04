@@ -107,7 +107,7 @@ pub async fn ingest(
 
                 let table_schema = table
                     .metadata()
-                    .current_schema(plugin.branch().as_deref())?;
+                    .current_schema(plugin.branch())?;
 
                 let table_arrow_schema: Arc<ArrowSchema> =
                     Arc::new((table_schema.fields()).try_into()?);
@@ -150,7 +150,7 @@ pub async fn ingest(
                     table.metadata(),
                     batches,
                     table.object_store(),
-                    plugin.branch().as_deref(),
+                    plugin.branch(),
                 )
                 .await?;
 
@@ -159,10 +159,10 @@ pub async fn ingest(
                 if !files.is_empty() {
                     let transaction = match schema.destination_sync_mode {
                         DestinationSyncMode::Overwrite => Ok(table
-                            .new_transaction(plugin.branch().as_deref())
+                            .new_transaction(plugin.branch())
                             .rewrite(files)),
                         DestinationSyncMode::Append => Ok(table
-                            .new_transaction(plugin.branch().as_deref())
+                            .new_transaction(plugin.branch())
                             .append(files)),
                         DestinationSyncMode::AppendDedup => {
                             Err(Error::Invalid("Sync Mode".to_owned()))

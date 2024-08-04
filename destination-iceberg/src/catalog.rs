@@ -137,18 +137,15 @@ pub async fn configure_catalog(
 
 fn remove_cdc_columns(schema: &mut JsonSchema) -> Result<(), Error> {
     match &mut schema.r#type {
-        Type::Compound(compound) => match compound {
-            Compound::Object(object) => {
-                let keys: Vec<String> = object.properties.keys().map(ToOwned::to_owned).collect();
-                for key in keys {
-                    if key.starts_with("_ab_cdc") {
-                        object.properties.remove(key.as_str());
-                    }
+        Type::Compound(Compound::Object(object)) => {
+            let keys: Vec<String> = object.properties.keys().map(ToOwned::to_owned).collect();
+            for key in keys {
+                if key.starts_with("_ab_cdc") {
+                    object.properties.remove(key.as_str());
                 }
-                Ok(())
             }
-            _ => Ok(()),
-        },
+            Ok(())
+        }
         _ => Ok(()),
     }
 }

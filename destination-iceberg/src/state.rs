@@ -45,7 +45,7 @@ pub async fn generate_state(
 
                 if let Some(new) = table.metadata().properties.get(AIRBYTE_SHARED_STATE) {
                     let mut shared_state = shared_state.lock().await;
-                    if *shared_state == None {
+                    if (*shared_state).is_none() {
                         *shared_state = Some(new.clone())
                     }
                 };
