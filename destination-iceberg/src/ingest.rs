@@ -1,4 +1,8 @@
-use std::{collections::HashMap, io::BufRead, sync::Arc};
+use std::{
+    collections::HashMap,
+    io::BufRead,
+    sync::{Arc, Mutex, RwLock},
+};
 
 use airbyte_protocol::message::{
     AirbyteGlobalState, AirbyteMessage, AirbyteStateMessage, ConfiguredAirbyteCatalog,
@@ -6,10 +10,8 @@ use airbyte_protocol::message::{
 };
 use anyhow::anyhow;
 use arrow::{datatypes::Schema as ArrowSchema, error::ArrowError, json::ReaderBuilder};
-use async_lock::RwLock;
 use futures::{
     channel::mpsc::{unbounded, UnboundedReceiver, UnboundedSender},
-    lock::Mutex,
     SinkExt, StreamExt, TryStreamExt,
 };
 use iceberg_rust::{
@@ -122,7 +124,7 @@ pub async fn ingest(
                                         destination_stats: _,
                                         source_stats: _,
                                     } => {
-                                        let mut stream_state = stream_state.lock().await;
+                                        let mut stream_state = stream_state.lock().unwrap();
                                         *stream_state = stream.stream_state;
                                         None
                                     }
@@ -183,7 +185,7 @@ pub async fn ingest(
                     }?;
 
                     let (shared_state, global_stream_state) = {
-                        let global_state = global_state.read().await;
+                        let global_state = global_state.read().unwrap();
                         if let Some(global) = global_state.as_ref() {
                             (
                                 global.shared_state.clone(),
@@ -205,7 +207,7 @@ pub async fn ingest(
                         debug!("Global state : {}", &state);
                     }
 
-                    let stream_state = { stream_state.lock().await.clone() };
+                    let stream_state = { stream_state.lock().unwrap().clone() };
 
                     if let Some(state) = &stream_state {
                         debug!("State of stream {}: {}", &stream.name, &state);
@@ -267,7 +269,7 @@ pub async fn ingest(
                         destination_stats: _,
                         source_stats: _,
                     } => {
-                        let mut state = global_state.write().await;
+                        let mut state = global_state.write().unwrap();
                         *state = Some(global.clone());
                     }
                     AirbyteStateMessage::Stream {

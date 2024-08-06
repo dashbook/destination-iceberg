@@ -118,12 +118,15 @@ mod tests {
         let mut config_file = File::create(config_path.clone())?;
 
         config_file.write_all(
-            r#"
+            (r#"
             {
-            "catalogUrl": "sqlite://",
+            "catalogUrl": "sqlite://"#
+                .to_string()
+                + tempdir.path().join("iceberg.db").to_str().unwrap()
+                + r#"?mode=rwc",
             "catalogName": "public"
             }
-        "#
+        "#)
             .as_bytes(),
         )?;
 
@@ -255,12 +258,15 @@ mod tests {
         let mut config_file = File::create(config_path.clone())?;
 
         config_file.write_all(
-            r#"
+            (r#"
             {
-            "catalogUrl": "sqlite://",
+            "catalogUrl": "sqlite://"#
+                .to_string()
+                + tempdir.path().join("iceberg.db").to_str().unwrap()
+                + r#"?mode=rwc",
             "catalogName": "public"
             }
-        "#
+        "#)
             .as_bytes(),
         )?;
 

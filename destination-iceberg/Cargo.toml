@@ -20,4 +20,3 @@ anyhow = { workspace = true }
 chrono = "0.4"
 tracing = { workspace = true }
 tracing-futures = { workspace = true }
-async-lock = { workspace = true }
