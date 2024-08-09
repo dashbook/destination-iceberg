@@ -14,7 +14,7 @@ pub(crate) static AIRBYTE_STREAM_STATE: &str = "airbyte.stream_state";
 pub async fn generate_state(
     plugin: Arc<dyn DestinationPlugin>,
     airbyte_catalog: &AirbyteCatalog,
-) -> Result<AirbyteStateMessage, Error> {
+) -> Result<Vec<AirbyteStateMessage>, Error> {
     let shared_state: Arc<Mutex<Option<String>>> = Arc::new(Mutex::new(None));
     let stream_states: Arc<Mutex<HashMap<StreamDescriptor, String>>> =
         Arc::new(Mutex::new(HashMap::new()));
@@ -60,24 +60,37 @@ pub async fn generate_state(
         })
         .await?;
 
-    Ok(AirbyteStateMessage::Global {
-        global: AirbyteGlobalState {
-            shared_state: Arc::try_unwrap(shared_state)
-                .unwrap()
-                .into_inner()
-                .map(|x| serde_json::from_str(&x))
-                .transpose()?,
-            stream_states: Arc::try_unwrap(stream_states)
-                .unwrap()
-                .into_inner()
-                .into_iter()
-                .map(|(key, value)| AirbyteStreamState {
-                    stream_descriptor: key,
-                    stream_state: serde_json::from_str(&value).unwrap(),
-                })
-                .collect(),
-        },
-        destination_stats: None,
-        source_stats: None,
-    })
+    let shared_state = Arc::try_unwrap(shared_state)
+        .unwrap()
+        .into_inner()
+        .map(|x| serde_json::from_str(&x))
+        .transpose()?;
+
+    let stream_states = Arc::try_unwrap(stream_states)
+        .unwrap()
+        .into_inner()
+        .into_iter()
+        .map(|(key, value)| AirbyteStreamState {
+            stream_descriptor: key,
+            stream_state: serde_json::from_str(&value).unwrap(),
+        });
+
+    if let Some(shared_state) = shared_state {
+        Ok(vec![AirbyteStateMessage::Global {
+            global: AirbyteGlobalState {
+                shared_state,
+                stream_states: stream_states.collect(),
+            },
+            destination_stats: None,
+            source_stats: None,
+        }])
+    } else {
+        Ok(stream_states
+            .map(|stream| AirbyteStateMessage::Stream {
+                stream,
+                destination_stats: None,
+                source_stats: None,
+            })
+            .collect())
+    }
 }
