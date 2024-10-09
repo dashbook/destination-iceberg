@@ -23,6 +23,7 @@ use tokio::task::JoinSet;
 use tracing::{debug, debug_span, Instrument};
 
 use crate::{
+    catalog::DEFAULT_NAMESPACE,
     error::Error,
     plugin::DestinationPlugin,
     state::{AIRBYTE_SHARED_STATE, AIRBYTE_STREAM_STATE},
@@ -94,7 +95,7 @@ pub async fn ingest(
                     &[plugin
                         .namespace()
                         .or(stream.namespace.as_deref())
-                        .ok_or(Error::NotFound("Namespace".to_owned()))?
+                        .unwrap_or(DEFAULT_NAMESPACE)
                         .to_string()],
                     &stream.name,
                 );

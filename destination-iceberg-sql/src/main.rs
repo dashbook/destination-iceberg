@@ -388,4 +388,66 @@ mod tests {
 
         Ok(())
     }
+
+    #[tokio::test]
+    async fn test_s3() -> Result<(), Error> {
+        let tempdir = tempdir()?;
+
+        let config_path = tempdir.path().join("config.json");
+
+        let mut config_file = File::create(config_path.clone())?;
+
+        config_file.write_all(
+            (r#"
+            {
+            "catalogUrl": "sqlite://"#
+                .to_string()
+                + tempdir.path().join("iceberg.db").to_str().unwrap()
+                + r#"?mode=rwc",
+            "catalogName": "public",
+            "namespace": "default"
+            }
+        "#)
+            .as_bytes(),
+        )?;
+
+        let plugin =
+            Arc::new(SqlDestinationPlugin::new(config_path.as_path().to_str().unwrap()).await?);
+
+        let airbyte_catalog =
+            configure_catalog("../testdata/s3/discover.json", plugin.clone()).await?;
+
+        let input = File::open("../testdata/s3/input1.txt")?;
+
+        ingest(&mut BufReader::new(input), plugin.clone(), &airbyte_catalog).await?;
+
+        let catalog = plugin.catalog().await?;
+
+        let orders_table = if let Tabular::Table(table) = catalog
+            .clone()
+            .load_tabular(&Identifier::parse("default.test")?)
+            .await?
+        {
+            Ok(table)
+        } else {
+            Err(anyhow!("Not a table"))
+        }?;
+
+        let manifests = orders_table.manifests(None, None).await?;
+
+        assert_eq!(manifests[0].added_rows_count.unwrap(), 8);
+
+        let stream_state = orders_table
+            .metadata()
+            .properties
+            .get("airbyte.stream_state")
+            .expect("Failed to get bookmark");
+
+        assert_eq!(
+            stream_state,
+            r#"{"_ab_source_file_last_modified":"2024-10-09T11:17:16Z","history":{"2024-10-09":["test.csv"]}}"#
+        );
+
+        Ok(())
+    }
 }

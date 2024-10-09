@@ -1,0 +1,33 @@
+{"type": "LOG", "log": {"level": "INFO", "message": "initialised stream with format: "}}
+{"type": "LOG", "log": {"level": "INFO", "message": "Starting syncing SourceS3"}}
+{"type": "LOG", "log": {"level": "INFO", "message": "initialised stream with format: {'filetype': 'csv'}"}}
+{"type": "LOG", "log": {"level": "INFO", "message": "Marking stream test as STARTED"}}
+{"type": "TRACE", "trace": {"type": "STREAM_STATUS", "emitted_at": 1728483795965.115, "stream_status": {"stream_descriptor": {"name": "test", "namespace": null}, "status": "STARTED"}}}
+{"type": "LOG", "log": {"level": "INFO", "message": "Syncing stream: test "}}
+{"type": "LOG", "log": {"level": "INFO", "message": "Iterating S3 bucket 'warehouse'"}}
+{"type": "LOG", "log": {"level": "INFO", "message": "Iterating S3 bucket 'warehouse'"}}
+{"type": "LOG", "log": {"level": "DEBUG", "message": "try to open Key: test.csv, LastModified: 2024-10-09T11:17:16+00:00, Size: 0.0005Mb"}}
+{"type": "LOG", "log": {"level": "DEBUG", "message": "inferring schema"}}
+{"type": "LOG", "log": {"level": "DEBUG", "message": "PyArrow type 'date32[day]' is not mapped, falling back to default conversion to string"}}
+{"type": "LOG", "log": {"level": "DEBUG", "message": "PyArrow type 'timestamp[ns]' is not mapped, falling back to default conversion to string"}}
+{"type": "LOG", "log": {"level": "INFO", "message": "Reading from file: Key: test.csv, LastModified: 2024-10-09T11:17:16+00:00, Size: 0.0005Mb"}}
+{"type": "LOG", "log": {"level": "DEBUG", "message": "try to open Key: test.csv, LastModified: 2024-10-09T11:17:16+00:00, Size: 0.0005Mb"}}
+{"type": "LOG", "log": {"level": "DEBUG", "message": "infer_datatypes is False, skipping infer_schema"}}
+{"type": "LOG", "log": {"level": "INFO", "message": "Marking stream test as RUNNING"}}
+{"type": "TRACE", "trace": {"type": "STREAM_STATUS", "emitted_at": 1728483796468.251, "stream_status": {"stream_descriptor": {"name": "test", "namespace": null}, "status": "RUNNING"}}}
+{"type": "RECORD", "record": {"stream": "test", "data": {"id": 1, "name": "PVdhmjb1", "valid": false, "code": 12, "degrees": -31.3, "birthday": "2021-07-14", "last_seen": "2021-07-14 15:30:09.224125", "_ab_source_file_last_modified": "2024-10-09T11:17:16Z", "_ab_source_file_url": "test.csv"}, "emitted_at": 1728483796467}}
+{"type": "RECORD", "record": {"stream": "test", "data": {"id": 2, "name": "j4DyXTS7", "valid": true, "code": -8, "degrees": 41.6, "birthday": "2021-07-14", "last_seen": "2021-07-14 15:30:09.224383", "_ab_source_file_last_modified": "2024-10-09T11:17:16Z", "_ab_source_file_url": "test.csv"}, "emitted_at": 1728483796469}}
+{"type": "RECORD", "record": {"stream": "test", "data": {"id": 3, "name": "v0w8fTME", "valid": false, "code": 7, "degrees": -27.5, "birthday": "2021-07-14", "last_seen": "2021-07-14 15:30:09.224527", "_ab_source_file_last_modified": "2024-10-09T11:17:16Z", "_ab_source_file_url": "test.csv"}, "emitted_at": 1728483796469}}
+{"type": "RECORD", "record": {"stream": "test", "data": {"id": 4, "name": "1q6jD8Np", "valid": false, "code": -8, "degrees": -6.7, "birthday": "2021-07-14", "last_seen": "2021-07-14 15:30:09.224741", "_ab_source_file_last_modified": "2024-10-09T11:17:16Z", "_ab_source_file_url": "test.csv"}, "emitted_at": 1728483796470}}
+{"type": "RECORD", "record": {"stream": "test", "data": {"id": 5, "name": "77h4aiMP", "valid": true, "code": -15, "degrees": -13.7, "birthday": "2021-07-14", "last_seen": "2021-07-14 15:30:09.224907", "_ab_source_file_last_modified": "2024-10-09T11:17:16Z", "_ab_source_file_url": "test.csv"}, "emitted_at": 1728483796470}}
+{"type": "RECORD", "record": {"stream": "test", "data": {"id": 6, "name": "Le35Wyic", "valid": true, "code": 3, "degrees": 35.3, "birthday": "2021-07-14", "last_seen": "2021-07-14 15:30:09.225033", "_ab_source_file_last_modified": "2024-10-09T11:17:16Z", "_ab_source_file_url": "test.csv"}, "emitted_at": 1728483796470}}
+{"type": "RECORD", "record": {"stream": "test", "data": {"id": 7, "name": "xZhh1Kyl", "valid": false, "code": 10, "degrees": -9.2, "birthday": "2021-07-14", "last_seen": "2021-07-14 15:30:09.225145", "_ab_source_file_last_modified": "2024-10-09T11:17:16Z", "_ab_source_file_url": "test.csv"}, "emitted_at": 1728483796470}}
+{"type": "RECORD", "record": {"stream": "test", "data": {"id": 8, "name": "M2t286iJ", "valid": false, "code": 4, "degrees": -3.5, "birthday": "2021-07-14", "last_seen": "2021-07-14 15:30:09.225320", "_ab_source_file_last_modified": "2024-10-09T11:17:16Z", "_ab_source_file_url": "test.csv"}, "emitted_at": 1728483796470}}
+{"type": "LOG", "log": {"level": "INFO", "message": "finished reading a stream slice"}}
+{"type": "STATE", "state": {"type": "STREAM", "stream": {"stream_descriptor": {"name": "test"}, "stream_state": {"_ab_source_file_last_modified": "2024-10-09T11:17:16Z", "history": {"2024-10-09": ["test.csv"]}}}, "data": {"test": {"_ab_source_file_last_modified": "2024-10-09T11:17:16Z", "history": {"2024-10-09": ["test.csv"]}}}}}
+{"type": "LOG", "log": {"level": "INFO", "message": "Read 8 records from test stream"}}
+{"type": "LOG", "log": {"level": "INFO", "message": "Marking stream test as STOPPED"}}
+{"type": "TRACE", "trace": {"type": "STREAM_STATUS", "emitted_at": 1728483796473.242, "stream_status": {"stream_descriptor": {"name": "test", "namespace": null}, "status": "COMPLETE"}}}
+{"type": "LOG", "log": {"level": "INFO", "message": "Finished syncing test"}}
+{"type": "LOG", "log": {"level": "INFO", "message": "SourceS3 runtimes:\nSyncing stream test 0:00:00.508487"}}
+{"type": "LOG", "log": {"level": "INFO", "message": "Finished syncing SourceS3"}}

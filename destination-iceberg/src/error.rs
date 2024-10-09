@@ -2,7 +2,7 @@ use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum Error {
-    #[error("{0} could not ve found.")]
+    #[error("{0} could not be found.")]
     NotFound(String),
     #[error("{0} is invalid.")]
     Invalid(String),
