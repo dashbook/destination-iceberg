@@ -3,5 +3,6 @@ WORKDIR /usr/src
 COPY . .
 RUN cargo install --path ./destination-iceberg-sql
 FROM eclipse-temurin:17-jre-jammy
+RUN apt-get update & apt-get install -y gettext-base & rm -rf /var/lib/apt/lists/*
 COPY --from=builder /usr/local/cargo/bin/destination-iceberg-sql /usr/local/bin/destination-iceberg
 CMD ["destination-iceberg"]
