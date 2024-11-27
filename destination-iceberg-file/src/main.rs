@@ -10,7 +10,7 @@ use clap::Parser;
 use destination_iceberg::{
     catalog::configure_catalog, error::Error, ingest::ingest, state::generate_state,
 };
-use plugin::SqlDestinationPlugin;
+use plugin::FileDestinationPlugin;
 use tracing::{debug, info};
 use tracing_subscriber::EnvFilter;
 
@@ -42,7 +42,7 @@ async fn main() -> Result<(), Error> {
 
     let args = Args::parse();
 
-    let plugin = Arc::new(SqlDestinationPlugin::new(&args.config).await?);
+    let plugin = Arc::new(FileDestinationPlugin::new(&args.config).await?);
 
     if args.state {
         info!("Generating state");
@@ -93,7 +93,7 @@ async fn main() -> Result<(), Error> {
 
 #[cfg(test)]
 mod tests {
-    use crate::SqlDestinationPlugin;
+    use crate::FileDestinationPlugin;
     use airbyte_protocol::message::{AirbyteMessage, AirbyteStateMessage};
     use anyhow::{anyhow, Error, Ok};
     use destination_iceberg::catalog::configure_catalog;
@@ -118,20 +118,22 @@ mod tests {
         let mut config_file = File::create(config_path.clone())?;
 
         config_file.write_all(
-            (r#"
+            (dbg!(
+                r#"
             {
-            "catalogUrl": "sqlite://"#
-                .to_string()
-                + tempdir.path().join("iceberg.db").to_str().unwrap()
-                + r#"?mode=rwc",
+            "catalogUrl": ""#
+                    .to_string()
+                    + tempdir.path().to_str().unwrap()
+                    + r#"",
             "catalogName": "public"
             }
-        "#)
+        "#
+            ))
             .as_bytes(),
         )?;
 
         let plugin =
-            Arc::new(SqlDestinationPlugin::new(config_path.as_path().to_str().unwrap()).await?);
+            Arc::new(FileDestinationPlugin::new(config_path.as_path().to_str().unwrap()).await?);
 
         let airbyte_catalog =
             configure_catalog("../testdata/inventory/discover.json", plugin.clone()).await?;
@@ -260,10 +262,10 @@ mod tests {
         config_file.write_all(
             (r#"
             {
-            "catalogUrl": "sqlite://"#
+            "catalogUrl": ""#
                 .to_string()
-                + tempdir.path().join("iceberg.db").to_str().unwrap()
-                + r#"?mode=rwc",
+                + tempdir.path().to_str().unwrap()
+                + r#"",
             "catalogName": "public"
             }
         "#)
@@ -271,7 +273,7 @@ mod tests {
         )?;
 
         let plugin =
-            Arc::new(SqlDestinationPlugin::new(config_path.as_path().to_str().unwrap()).await?);
+            Arc::new(FileDestinationPlugin::new(config_path.as_path().to_str().unwrap()).await?);
 
         let airbyte_catalog =
             configure_catalog("../testdata/mysql/discover.json", plugin.clone()).await?;
@@ -400,10 +402,10 @@ mod tests {
         config_file.write_all(
             (r#"
             {
-            "catalogUrl": "sqlite://"#
+            "catalogUrl": ""#
                 .to_string()
-                + tempdir.path().join("iceberg.db").to_str().unwrap()
-                + r#"?mode=rwc",
+                + tempdir.path().to_str().unwrap()
+                + r#"",
             "catalogName": "public",
             "namespace": "default"
             }
@@ -412,7 +414,7 @@ mod tests {
         )?;
 
         let plugin =
-            Arc::new(SqlDestinationPlugin::new(config_path.as_path().to_str().unwrap()).await?);
+            Arc::new(FileDestinationPlugin::new(config_path.as_path().to_str().unwrap()).await?);
 
         let airbyte_catalog =
             configure_catalog("../testdata/s3/discover.json", plugin.clone()).await?;

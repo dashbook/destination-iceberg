@@ -38,3 +38,21 @@ jobs:
           tags: dashbook/destination-iceberg:python-sql
           cache-from: type=registry,ref=dashbook/destination-iceberg:python-sql
           cache-to: type=inline
+      -
+        name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          file: "./destination-iceberg-file/Dockerfile_java"
+          tags: dashbook/destination-iceberg:java-file
+          cache-from: type=registry,ref=dashbook/destination-iceberg:java-file
+          cache-to: type=inline
+      -
+        name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          file: "./destination-iceberg-file/Dockerfile_python"
+          tags: dashbook/destination-iceberg:python-file
+          cache-from: type=registry,ref=dashbook/destination-iceberg:python-file
+          cache-to: type=inline

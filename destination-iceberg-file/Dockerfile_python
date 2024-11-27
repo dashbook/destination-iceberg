@@ -1,0 +1,8 @@
+FROM rust:bookworm as builder
+WORKDIR /usr/src
+COPY . .
+RUN cargo install --path ./destination-iceberg-file
+FROM python:3.10-slim-bookworm
+RUN apt-get update & apt-get install -y extra-runtime-dependencies gettext-base & rm -rf /var/lib/apt/lists/*
+COPY --from=builder /usr/local/cargo/bin/destination-iceberg-file /usr/local/bin/destination-iceberg
+CMD ["destination-iceberg"]

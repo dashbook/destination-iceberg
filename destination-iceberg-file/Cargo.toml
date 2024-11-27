@@ -1,5 +1,5 @@
 [package]
-name = "destination-iceberg-sql"
+name = "destination-iceberg-file"
 version = "0.1.0"
 edition = "2021"
 
@@ -10,8 +10,7 @@ async-trait = { workspace = true }
 clap = { version = "4", features = ["derive"] }
 dashtool-common = { workspace = true }
 futures = { workspace = true }
-iceberg-sql-catalog = { git = "https://github.com/jankaul/iceberg-rust", version = "0.5" }
-sqlx = { version = "0.8", features = ["runtime-tokio", "tls-rustls", "any", "sqlite", "postgres", "mysql"], default-features = false }
+iceberg-file-catalog = { git = "https://github.com/jankaul/iceberg-rust", version = "0.5" }
 iceberg-rust = { workspace = true }
 object_store = { workspace = true }
 serde = { workspace = true }

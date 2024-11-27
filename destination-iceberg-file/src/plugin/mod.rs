@@ -7,11 +7,11 @@ use destination_iceberg::{
     error::Error,
     plugin::{BaseConfig, DestinationPlugin, StreamConfig},
 };
+use iceberg_file_catalog::FileCatalog;
 use iceberg_rust::{
     catalog::{bucket::ObjectStoreBuilder, Catalog},
     error::Error as IcebergError,
 };
-use iceberg_sql_catalog::SqlCatalog;
 use object_store::aws::AmazonS3Builder;
 use serde::{Deserialize, Serialize};
 
@@ -28,13 +28,13 @@ pub struct Config {
 }
 
 #[derive(Debug)]
-pub(crate) struct SqlDestinationPlugin {
+pub(crate) struct FileDestinationPlugin {
     config: BaseConfig,
     catalog: Arc<dyn Catalog>,
     bucket: Option<String>,
 }
 
-impl SqlDestinationPlugin {
+impl FileDestinationPlugin {
     pub async fn new(path: &str) -> Result<Self, Error> {
         let config_json = fs::read_to_string(path)?;
         let config: Config = serde_json::from_str(&config_json)?;
@@ -76,7 +76,7 @@ impl SqlDestinationPlugin {
         };
 
         let catalog = Arc::new(
-            SqlCatalog::new(&config.catalog_url, &config.catalog_name, object_store)
+            FileCatalog::new(&config.catalog_url, &config.catalog_name, object_store)
                 .await
                 .map_err(IcebergError::from)?,
         );
@@ -90,7 +90,7 @@ impl SqlDestinationPlugin {
 }
 
 #[async_trait]
-impl DestinationPlugin for SqlDestinationPlugin {
+impl DestinationPlugin for FileDestinationPlugin {
     async fn catalog(&self) -> Result<Arc<dyn Catalog>, Error> {
         Ok(self.catalog.clone())
     }
