@@ -1648,7 +1648,7 @@ dependencies = [
 [[package]]
 name = "iceberg-file-catalog"
 version = "0.5.8"
-source = "git+https://github.com/jankaul/iceberg-rust#c85c6643c557bfd2d76a48e24aa11184e0640bd6"
+source = "git+https://github.com/jankaul/iceberg-rust#4f1bd3013f88cd21cb189456cb7c1dd9f3f3150f"
 dependencies = [
  "async-trait",
  "futures",
@@ -1663,7 +1663,7 @@ dependencies = [
 [[package]]
 name = "iceberg-rust"
 version = "0.5.8"
-source = "git+https://github.com/jankaul/iceberg-rust#c85c6643c557bfd2d76a48e24aa11184e0640bd6"
+source = "git+https://github.com/jankaul/iceberg-rust#4f1bd3013f88cd21cb189456cb7c1dd9f3f3150f"
 dependencies = [
  "apache-avro",
  "arrow",
@@ -1691,7 +1691,7 @@ dependencies = [
 [[package]]
 name = "iceberg-rust-spec"
 version = "0.5.8"
-source = "git+https://github.com/jankaul/iceberg-rust#c85c6643c557bfd2d76a48e24aa11184e0640bd6"
+source = "git+https://github.com/jankaul/iceberg-rust#4f1bd3013f88cd21cb189456cb7c1dd9f3f3150f"
 dependencies = [
  "apache-avro",
  "arrow-schema",
@@ -1716,7 +1716,7 @@ dependencies = [
 [[package]]
 name = "iceberg-sql-catalog"
 version = "0.5.8"
-source = "git+https://github.com/jankaul/iceberg-rust#c85c6643c557bfd2d76a48e24aa11184e0640bd6"
+source = "git+https://github.com/jankaul/iceberg-rust#4f1bd3013f88cd21cb189456cb7c1dd9f3f3150f"
 dependencies = [
  "async-trait",
  "futures",
