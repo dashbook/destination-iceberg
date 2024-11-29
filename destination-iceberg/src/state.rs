@@ -6,7 +6,7 @@ use airbyte_protocol::message::{
 use futures::{lock::Mutex, stream, StreamExt, TryStreamExt};
 use iceberg_rust::catalog::{identifier::Identifier, tabular::Tabular};
 
-use crate::{error::Error, plugin::DestinationPlugin};
+use crate::{catalog::DEFAULT_NAMESPACE, error::Error, plugin::DestinationPlugin};
 
 pub(crate) static AIRBYTE_SHARED_STATE: &str = "airbyte.shared_state";
 pub(crate) static AIRBYTE_STREAM_STATE: &str = "airbyte.stream_state";
@@ -30,7 +30,7 @@ pub async fn generate_state(
                     .namespace()
                     .or(stream.namespace.as_deref())
                     .map(ToOwned::to_owned)
-                    .unwrap_or("public".to_owned());
+                    .unwrap_or(DEFAULT_NAMESPACE.to_owned());
                 let ident = Identifier::new(&[namespace], &stream.name);
 
                 let catalog = plugin.catalog().await?;
