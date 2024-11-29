@@ -22,7 +22,6 @@ pub struct Config {
     pub base: BaseConfig,
     #[serde(flatten)]
     pub object_store: ObjectStoreConfig,
-    pub catalog_name: String,
     pub catalog_url: String,
     pub bucket: Option<String>,
 }
@@ -76,7 +75,7 @@ impl FileDestinationPlugin {
         };
 
         let catalog = Arc::new(
-            FileCatalog::new(&config.catalog_url, &config.catalog_name, object_store)
+            FileCatalog::new(&config.catalog_url, object_store)
                 .await
                 .map_err(IcebergError::from)?,
         );

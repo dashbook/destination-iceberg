@@ -124,8 +124,7 @@ mod tests {
             "catalogUrl": ""#
                     .to_string()
                     + tempdir.path().to_str().unwrap()
-                    + r#"",
-            "catalogName": "public"
+                    + r#""
             }
         "#
             ))
@@ -265,8 +264,7 @@ mod tests {
             "catalogUrl": ""#
                 .to_string()
                 + tempdir.path().to_str().unwrap()
-                + r#"",
-            "catalogName": "public"
+                + r#""
             }
         "#)
             .as_bytes(),
@@ -405,9 +403,7 @@ mod tests {
             "catalogUrl": ""#
                 .to_string()
                 + tempdir.path().to_str().unwrap()
-                + r#"",
-            "catalogName": "public",
-            "namespace": "default"
+                + r#""
             }
         "#)
             .as_bytes(),
