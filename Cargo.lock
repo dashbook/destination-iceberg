@@ -985,7 +985,7 @@ dependencies = [
  "chrono",
  "dashtool-common",
  "futures",
- "iceberg-rust 0.5.8 (git+https://github.com/jankaul/iceberg-rust?branch=copy-if-not-exists)",
+ "iceberg-rust",
  "jsonschema",
  "object_store",
  "serde",
@@ -1008,7 +1008,7 @@ dependencies = [
  "destination-iceberg",
  "futures",
  "iceberg-file-catalog",
- "iceberg-rust 0.5.8 (git+https://github.com/jankaul/iceberg-rust?branch=copy-if-not-exists)",
+ "iceberg-rust",
  "object_store",
  "serde",
  "serde_json",
@@ -1029,7 +1029,7 @@ dependencies = [
  "dashtool-common",
  "destination-iceberg",
  "futures",
- "iceberg-rust 0.5.8 (git+https://github.com/jankaul/iceberg-rust?branch=copy-if-not-exists)",
+ "iceberg-rust",
  "iceberg-sql-catalog",
  "object_store",
  "serde",
@@ -1642,11 +1642,11 @@ dependencies = [
 [[package]]
 name = "iceberg-file-catalog"
 version = "0.5.8"
-source = "git+https://github.com/jankaul/iceberg-rust#771401f346ec8d7bc385b0c56633af0b44f8f069"
+source = "git+https://github.com/jankaul/iceberg-rust?branch=copy-if-not-exists#09e11f42918841f0cb2fa39dcc19f6e36c0ca59f"
 dependencies = [
  "async-trait",
  "futures",
- "iceberg-rust 0.5.8 (git+https://github.com/jankaul/iceberg-rust)",
+ "iceberg-rust",
  "object_store",
  "serde_json",
  "thiserror 1.0.69",
@@ -1666,35 +1666,7 @@ dependencies = [
  "derive_builder",
  "futures",
  "getrandom",
- "iceberg-rust-spec 0.5.8 (git+https://github.com/jankaul/iceberg-rust?branch=copy-if-not-exists)",
- "itertools 0.10.5",
- "object_store",
- "parquet",
- "serde",
- "serde_derive",
- "serde_json",
- "smallvec",
- "sqlparser",
- "thiserror 1.0.69",
- "thrift",
- "tokio",
- "url",
- "uuid",
-]
-
-[[package]]
-name = "iceberg-rust"
-version = "0.5.8"
-source = "git+https://github.com/jankaul/iceberg-rust#771401f346ec8d7bc385b0c56633af0b44f8f069"
-dependencies = [
- "apache-avro",
- "arrow",
- "async-trait",
- "derive-getters",
- "derive_builder",
- "futures",
- "getrandom",
- "iceberg-rust-spec 0.5.8 (git+https://github.com/jankaul/iceberg-rust)",
+ "iceberg-rust-spec",
  "itertools 0.10.5",
  "object_store",
  "parquet",
@@ -1714,31 +1686,6 @@ dependencies = [
 name = "iceberg-rust-spec"
 version = "0.5.8"
 source = "git+https://github.com/jankaul/iceberg-rust?branch=copy-if-not-exists#09e11f42918841f0cb2fa39dcc19f6e36c0ca59f"
-dependencies = [
- "apache-avro",
- "arrow-schema",
- "chrono",
- "derive-getters",
- "derive_builder",
- "getrandom",
- "itertools 0.10.5",
- "murmur3",
- "ordered-float 4.5.0",
- "rust_decimal",
- "serde",
- "serde_bytes",
- "serde_derive",
- "serde_json",
- "serde_repr",
- "thiserror 1.0.69",
- "url",
- "uuid",
-]
-
-[[package]]
-name = "iceberg-rust-spec"
-version = "0.5.8"
-source = "git+https://github.com/jankaul/iceberg-rust#771401f346ec8d7bc385b0c56633af0b44f8f069"
 dependencies = [
  "apache-avro",
  "arrow-schema",
@@ -1763,11 +1710,11 @@ dependencies = [
 [[package]]
 name = "iceberg-sql-catalog"
 version = "0.5.8"
-source = "git+https://github.com/jankaul/iceberg-rust#771401f346ec8d7bc385b0c56633af0b44f8f069"
+source = "git+https://github.com/jankaul/iceberg-rust?branch=copy-if-not-exists#09e11f42918841f0cb2fa39dcc19f6e36c0ca59f"
 dependencies = [
  "async-trait",
  "futures",
- "iceberg-rust 0.5.8 (git+https://github.com/jankaul/iceberg-rust)",
+ "iceberg-rust",
  "object_store",
  "serde_json",
  "sqlx",

@@ -10,7 +10,7 @@ async-trait = { workspace = true }
 clap = { version = "4", features = ["derive"] }
 dashtool-common = { workspace = true }
 futures = { workspace = true }
-iceberg-sql-catalog = { git = "https://github.com/jankaul/iceberg-rust", version = "0.5" }
+iceberg-sql-catalog = { git = "https://github.com/jankaul/iceberg-rust", version = "0.5", branch = "copy-if-not-exists"  }
 sqlx = { version = "0.8", features = ["runtime-tokio", "tls-rustls", "any", "sqlite", "postgres", "mysql"], default-features = false }
 iceberg-rust = { workspace = true }
 object_store = { workspace = true }
