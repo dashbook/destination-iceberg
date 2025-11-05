@@ -113,30 +113,34 @@ pub async fn ingest(
                 let table_arrow_schema: Arc<ArrowSchema> =
                     Arc::new((table_schema.fields()).try_into()?);
 
+                let move_stream_state = stream_state.clone();
+
                 let batches = messages
-                    .filter_map(|message| {
-                        let stream_state = stream_state.clone();
+                    .filter_map(move |message| {
+                        let stream_state = move_stream_state.clone();
                         async move {
                             match message {
                                 AirbyteMessage::Record { record } => Some(record),
-                                AirbyteMessage::State { state } => match state {
-                                    AirbyteStateMessage::Stream {
+                                AirbyteMessage::State { state } => {
+                                    if let AirbyteStateMessage::Stream {
                                         stream,
                                         destination_stats: _,
                                         source_stats: _,
-                                    } => {
+                                    } = state
+                                    {
                                         let mut stream_state = stream_state.lock().unwrap();
                                         *stream_state = stream.stream_state;
                                         None
+                                    } else {
+                                        None
                                     }
-                                    _ => None,
-                                },
+                                }
                                 _ => None,
                             }
                         }
                     })
                     // Check if record conforms to schema
-                    .map(|message| {
+                    .map(move |message| {
                         compiled_schema.validate(&message.data).map_err(|mut err| {
                             let error =
                                 format!("{} in data {}", err.next().unwrap(), &message.data);
@@ -149,11 +153,11 @@ pub async fn ingest(
                     .try_chunks(ARROW_BATCH_SIZE)
                     .map_err(|err| ArrowError::ExternalError(Box::new(err)))
                     // Convert messages to arrow batches
-                    .and_then(|batches| {
+                    .and_then(move |batches| {
                         let table_arrow_schema = table_arrow_schema.clone();
                         async move {
                             let mut decoder =
-                                ReaderBuilder::new(table_arrow_schema.clone()).build_decoder()?;
+                                ReaderBuilder::new(table_arrow_schema).build_decoder()?;
                             decoder.serialize(&batches)?;
                             let record_batch = decoder.flush()?.ok_or(ArrowError::MemoryError(
                                 "Data of recordbatch is empty.".to_string(),
@@ -162,23 +166,17 @@ pub async fn ingest(
                         }
                     });
 
-                let files = write_parquet_partitioned(
-                    table.metadata(),
-                    batches,
-                    table.object_store(),
-                    plugin.branch(),
-                )
-                .await?;
+                let files = write_parquet_partitioned(&table, batches, plugin.branch()).await?;
 
                 debug!("Stream {} finished writing parquet files.", &stream.name);
 
                 if !files.is_empty() {
                     let transaction = match schema.destination_sync_mode {
                         DestinationSyncMode::Overwrite => {
-                            Ok(table.new_transaction(plugin.branch()).rewrite(files))
+                            Ok(table.new_transaction(plugin.branch()).replace(files))
                         }
                         DestinationSyncMode::Append => {
-                            Ok(table.new_transaction(plugin.branch()).append(files))
+                            Ok(table.new_transaction(plugin.branch()).append_data(files))
                         }
                         DestinationSyncMode::AppendDedup => {
                             Err(Error::Invalid("Sync Mode".to_owned()))

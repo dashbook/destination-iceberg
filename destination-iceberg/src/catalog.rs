@@ -69,10 +69,7 @@ pub async fn configure_catalog(
                 if !catalog.tabular_exists(&ident).await? {
                     let arrow_schema = schema_to_arrow(&stream.json_schema)?;
 
-                    let schema = Schema::builder()
-                        .with_fields((&arrow_schema).try_into()?)
-                        .build()
-                        .map_err(iceberg_rust::spec::error::Error::from)?;
+                    let schema = Schema::from_struct_type((&arrow_schema).try_into()?, 0, None);
 
                     let base_path = plugin
                         .bucket()

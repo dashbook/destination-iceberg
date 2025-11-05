@@ -10,7 +10,7 @@ async-trait = { workspace = true }
 clap = { version = "4", features = ["derive"] }
 dashtool-common = { workspace = true }
 futures = { workspace = true }
-iceberg-file-catalog = { git = "https://github.com/jankaul/iceberg-rust", version = "0.5", branch = "copy-if-not-exists"  }
+iceberg-file-catalog = "0.9.0"
 iceberg-rust = { workspace = true }
 object_store = { workspace = true }
 serde = { workspace = true }

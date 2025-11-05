@@ -8,8 +8,7 @@ use destination_iceberg::{
     plugin::{BaseConfig, DestinationPlugin, StreamConfig},
 };
 use iceberg_rust::{
-    catalog::{bucket::ObjectStoreBuilder, Catalog},
-    error::Error as IcebergError,
+    catalog::Catalog, error::Error as IcebergError, object_store::ObjectStoreBuilder,
 };
 use iceberg_sql_catalog::SqlCatalog;
 use object_store::aws::AmazonS3Builder;
@@ -71,7 +70,7 @@ impl SqlDestinationPlugin {
                         builder.with_allow_http(allow_http.parse().map_err(anyhow::Error::msg)?);
                 }
 
-                ObjectStoreBuilder::S3(builder)
+                ObjectStoreBuilder::S3(Box::new(builder))
             }
         };
 
