@@ -7,6 +7,7 @@ use airbyte_protocol::message::{
 use airbyte_protocol::schema::{Compound, JsonSchema, Type};
 use anyhow::anyhow;
 use futures::{stream, StreamExt, TryStreamExt};
+use iceberg_rust::spec::arrow::schema::new_fields_with_ids;
 use iceberg_rust::spec::partition::{PartitionField, PartitionSpec, Transform};
 use iceberg_rust::table::Table;
 use iceberg_rust::{catalog::identifier::Identifier, spec::schema::Schema};
@@ -69,7 +70,11 @@ pub async fn configure_catalog(
                 if !catalog.tabular_exists(&ident).await? {
                     let arrow_schema = schema_to_arrow(&stream.json_schema)?;
 
-                    let schema = Schema::from_struct_type((&arrow_schema).try_into()?, 0, None);
+                    let schema = Schema::from_struct_type(
+                        (&new_fields_with_ids(&arrow_schema.fields, &mut 0)).try_into()?,
+                        0,
+                        None,
+                    );
 
                     let base_path = plugin
                         .bucket()

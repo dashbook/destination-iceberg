@@ -118,16 +118,14 @@ mod tests {
         let mut config_file = File::create(config_path.clone())?;
 
         config_file.write_all(
-            (dbg!(
-                r#"
+            (r#"
             {
             "catalogUrl": ""#
-                    .to_string()
-                    + tempdir.path().to_str().unwrap()
-                    + r#""
+                .to_string()
+                + tempdir.path().to_str().unwrap()
+                + r#""
             }
-        "#
-            ))
+        "#)
             .as_bytes(),
         )?;
 
