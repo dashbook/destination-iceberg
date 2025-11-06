@@ -110,48 +110,59 @@ mod tests {
     use tempfile::tempdir;
 
     #[tokio::test]
-    async fn test_orders() -> Result<(), Error> {
-        let tempdir = tempdir()?;
+    async fn test_orders() {
+        let tempdir = tempdir().unwrap();
 
         let config_path = tempdir.path().join("config.json");
 
-        let mut config_file = File::create(config_path.clone())?;
+        let mut config_file = File::create(config_path.clone()).unwrap();
 
-        config_file.write_all(
-            (r#"
+        config_file
+            .write_all(
+                (r#"
             {
             "catalogUrl": ""#
-                .to_string()
-                + tempdir.path().to_str().unwrap()
-                + r#""
+                    .to_string()
+                    + tempdir.path().to_str().unwrap()
+                    + r#""
             }
         "#)
-            .as_bytes(),
-        )?;
+                .as_bytes(),
+            )
+            .unwrap();
 
-        let plugin =
-            Arc::new(FileDestinationPlugin::new(config_path.as_path().to_str().unwrap()).await?);
+        let plugin = Arc::new(
+            FileDestinationPlugin::new(config_path.as_path().to_str().unwrap())
+                .await
+                .unwrap(),
+        );
 
         let airbyte_catalog =
-            configure_catalog("../testdata/inventory/discover.json", plugin.clone()).await?;
+            configure_catalog("../testdata/inventory/discover.json", plugin.clone())
+                .await
+                .unwrap();
 
-        let input = File::open("../testdata/inventory/input1.txt")?;
+        let input = File::open("../testdata/inventory/input1.txt").unwrap();
 
-        ingest(&mut BufReader::new(input), plugin.clone(), &airbyte_catalog).await?;
+        ingest(&mut BufReader::new(input), plugin.clone(), &airbyte_catalog)
+            .await
+            .unwrap();
 
-        let catalog = plugin.catalog().await?;
+        let catalog = plugin.catalog().await.unwrap();
 
         let orders_table = if let Tabular::Table(table) = catalog
             .clone()
-            .load_tabular(&Identifier::parse("inventory.orders", None)?)
-            .await?
+            .load_tabular(&Identifier::parse("inventory.orders", None).unwrap())
+            .await
+            .unwrap()
         {
             Ok(table)
         } else {
             Err(anyhow!("Not a table"))
-        }?;
+        }
+        .unwrap();
 
-        let manifests = orders_table.manifests(None, None).await?;
+        let manifests = orders_table.manifests(None, None).await.unwrap();
 
         assert_eq!(manifests[0].added_rows_count.unwrap(), 2);
 
@@ -177,16 +188,18 @@ mod tests {
             r#"{"cursor_field":[],"stream_name":"orders","stream_namespace":"inventory"}"#
         );
 
-        let catalog_json = fs::read_to_string("../testdata/inventory/discover.json")?;
+        let catalog_json = fs::read_to_string("../testdata/inventory/discover.json").unwrap();
 
         let AirbyteMessage::Catalog {
             catalog: configured_airbyte_catalog,
-        } = serde_json::from_str(&catalog_json)?
+        } = serde_json::from_str(&catalog_json).unwrap()
         else {
-            return Err(anyhow!("No catalog in catalog file."));
+            panic!("No catalog in catalog file.");
         };
 
-        let state = generate_state(plugin.clone(), &configured_airbyte_catalog).await?;
+        let state = generate_state(plugin.clone(), &configured_airbyte_catalog)
+            .await
+            .unwrap();
 
         let AirbyteStateMessage::Global {
             ref global,
@@ -194,7 +207,7 @@ mod tests {
             source_stats: _,
         } = state[0]
         else {
-            return Err(anyhow!("No global state"));
+            panic!("No global state");
         };
 
         assert_eq!(
@@ -204,15 +217,17 @@ mod tests {
 
         let products_table = if let Tabular::Table(table) = catalog
             .clone()
-            .load_tabular(&Identifier::parse("inventory.products", None)?)
-            .await?
+            .load_tabular(&Identifier::parse("inventory.products", None).unwrap())
+            .await
+            .unwrap()
         {
             Ok(table)
         } else {
             Err(anyhow!("Not a table"))
-        }?;
+        }
+        .unwrap();
 
-        let manifests = products_table.manifests(None, None).await?;
+        let manifests = products_table.manifests(None, None).await.unwrap();
 
         assert_eq!(manifests[0].added_rows_count.unwrap(), 5);
 
@@ -227,25 +242,27 @@ mod tests {
             r#"{"state":{"[\"postgres\",{\"server\":\"postgres\"}]":"{\"transaction_id\":null,\"lsn\":37270192,\"txId\":780,\"ts_usec\":1720250537115587}"}}"#
         );
 
-        let input = File::open("../testdata/inventory/input2.txt")?;
+        let input = File::open("../testdata/inventory/input2.txt").unwrap();
 
-        ingest(&mut BufReader::new(input), plugin.clone(), &airbyte_catalog).await?;
+        ingest(&mut BufReader::new(input), plugin.clone(), &airbyte_catalog)
+            .await
+            .unwrap();
 
         let orders_table = if let Tabular::Table(table) = catalog
             .clone()
-            .load_tabular(&Identifier::parse("inventory.orders", None)?)
-            .await?
+            .load_tabular(&Identifier::parse("inventory.orders", None).unwrap())
+            .await
+            .unwrap()
         {
             Ok(table)
         } else {
             Err(anyhow!("Not a table"))
-        }?;
+        }
+        .unwrap();
 
-        let manifests = orders_table.manifests(None, None).await?;
+        let manifests = orders_table.manifests(None, None).await.unwrap();
 
         assert_eq!(manifests[0].added_rows_count.unwrap(), 4);
-
-        Ok(())
     }
 
     #[tokio::test]
