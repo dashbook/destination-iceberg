@@ -103,6 +103,7 @@ mod tests {
     use iceberg_rust::catalog::identifier::Identifier;
     use iceberg_rust::catalog::tabular::Tabular;
     use serde_json::json;
+    use tracing_subscriber::EnvFilter;
 
     use std::fs::{self, File};
     use std::io::{BufReader, Write};
@@ -111,6 +112,11 @@ mod tests {
 
     #[tokio::test]
     async fn test_orders() {
+        tracing_subscriber::fmt()
+            .with_writer(std::io::stderr)
+            .with_env_filter(EnvFilter::from_default_env())
+            .init();
+
         let tempdir = tempdir().unwrap();
 
         let config_path = tempdir.path().join("config.json");
