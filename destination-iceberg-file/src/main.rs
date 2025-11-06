@@ -446,4 +446,34 @@ mod tests {
 
         Ok(())
     }
+
+    #[test]
+    fn test_parse_testdata_input1() {
+        let file_content = std::fs::read_to_string("../testdata/inventory/input1.txt")
+            .expect("Failed to read testdata/input1.txt");
+
+        let mut parsed_count = 0;
+        for (line_num, line) in file_content.lines().enumerate() {
+            // Skip empty lines
+            if line.trim().is_empty() {
+                continue;
+            }
+
+            let result: Result<AirbyteMessage, _> = serde_json::from_str(line);
+            assert!(
+                result.is_ok(),
+                "Failed to parse line {}: {}\nError: {:?}",
+                line_num + 1,
+                line,
+                result.err()
+            );
+            parsed_count += 1;
+        }
+
+        // Ensure we actually parsed some messages
+        assert!(
+            parsed_count > 0,
+            "No messages were parsed from the test file"
+        );
+    }
 }
