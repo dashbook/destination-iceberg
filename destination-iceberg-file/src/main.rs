@@ -4,7 +4,7 @@ use std::{
     sync::Arc,
 };
 
-use airbyte_protocol::message::{AirbyteMessage, ConfiguredAirbyteCatalog};
+use airbyte_protocol::message::{AirbyteCatalog, ConfiguredAirbyteCatalog};
 use anyhow::anyhow;
 use clap::Parser;
 use destination_iceberg::{
@@ -50,9 +50,7 @@ async fn main() -> Result<(), Error> {
         let catalog_json =
             fs::read_to_string(&args.catalog.ok_or(Error::NotFound("Catalog".to_owned()))?)?;
 
-        let AirbyteMessage::Catalog { catalog } = serde_json::from_str(&catalog_json)? else {
-            return Err(Error::Invalid("Catalog message".to_owned()));
-        };
+        let catalog: AirbyteCatalog = serde_json::from_str(&catalog_json)?;
 
         let state = generate_state(plugin.clone(), &catalog).await?;
 
