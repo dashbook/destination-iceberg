@@ -1,7 +1,8 @@
 use std::{collections::HashMap, sync::Arc};
 
 use airbyte_protocol::message::{
-    AirbyteCatalog, AirbyteGlobalState, AirbyteStateMessage, AirbyteStreamState, StreamDescriptor,
+    AirbyteGlobalState, AirbyteStateMessage, AirbyteStreamState, ConfiguredAirbyteCatalog,
+    StreamDescriptor,
 };
 use futures::{lock::Mutex, stream, StreamExt, TryStreamExt};
 use iceberg_rust::catalog::{identifier::Identifier, tabular::Tabular};
@@ -13,7 +14,7 @@ pub(crate) static AIRBYTE_STREAM_STATE: &str = "airbyte.stream_state";
 
 pub async fn generate_state(
     plugin: Arc<dyn DestinationPlugin>,
-    airbyte_catalog: &AirbyteCatalog,
+    airbyte_catalog: &ConfiguredAirbyteCatalog,
 ) -> Result<Vec<AirbyteStateMessage>, Error> {
     let shared_state: Arc<Mutex<Option<String>>> = Arc::new(Mutex::new(None));
     let stream_states: Arc<Mutex<HashMap<StreamDescriptor, String>>> =
@@ -28,10 +29,10 @@ pub async fn generate_state(
             async move {
                 let namespace = plugin
                     .namespace()
-                    .or(stream.namespace.as_deref())
+                    .or(stream.stream.namespace.as_deref())
                     .map(ToOwned::to_owned)
                     .unwrap_or(DEFAULT_NAMESPACE.to_owned());
-                let ident = Identifier::new(&[namespace], &stream.name);
+                let ident = Identifier::new(&[namespace], &stream.stream.name);
 
                 let catalog = plugin.catalog().await?;
 

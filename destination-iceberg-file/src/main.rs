@@ -4,7 +4,7 @@ use std::{
     sync::Arc,
 };
 
-use airbyte_protocol::message::{AirbyteCatalog, ConfiguredAirbyteCatalog};
+use airbyte_protocol::message::ConfiguredAirbyteCatalog;
 use anyhow::anyhow;
 use clap::Parser;
 use destination_iceberg::{
@@ -50,7 +50,7 @@ async fn main() -> Result<(), Error> {
         let catalog_json =
             fs::read_to_string(&args.catalog.ok_or(Error::NotFound("Catalog".to_owned()))?)?;
 
-        let catalog: AirbyteCatalog = serde_json::from_str(&catalog_json)?;
+        let catalog: ConfiguredAirbyteCatalog = serde_json::from_str(&catalog_json)?;
 
         let state = generate_state(plugin.clone(), &catalog).await?;
 
@@ -92,7 +92,9 @@ async fn main() -> Result<(), Error> {
 #[cfg(test)]
 mod tests {
     use crate::FileDestinationPlugin;
-    use airbyte_protocol::message::{AirbyteMessage, AirbyteStateMessage};
+    use airbyte_protocol::message::{
+        AirbyteMessage, AirbyteStateMessage, ConfiguredAirbyteCatalog,
+    };
     use anyhow::{anyhow, Error, Ok};
     use destination_iceberg::catalog::configure_catalog;
     use destination_iceberg::ingest::ingest;
@@ -192,14 +194,10 @@ mod tests {
             r#"{"cursor_field":[],"stream_name":"orders","stream_namespace":"inventory"}"#
         );
 
-        let catalog_json = fs::read_to_string("../testdata/inventory/discover.json").unwrap();
+        let catalog_json = fs::read_to_string("../testdata/inventory/catalog.json").unwrap();
 
-        let AirbyteMessage::Catalog {
-            catalog: configured_airbyte_catalog,
-        } = serde_json::from_str(&catalog_json).unwrap()
-        else {
-            panic!("No catalog in catalog file.");
-        };
+        let configured_airbyte_catalog: ConfiguredAirbyteCatalog =
+            serde_json::from_str(&catalog_json).unwrap();
 
         let state = generate_state(plugin.clone(), &configured_airbyte_catalog)
             .await
@@ -337,14 +335,10 @@ mod tests {
             r#"{"cursor_field":[],"stream_name":"orders","stream_namespace":"inventory"}"#
         );
 
-        let catalog_json = fs::read_to_string("../testdata/mysql/discover.json")?;
+        let catalog_json = fs::read_to_string("../testdata/mysql/catalog.json")?;
 
-        let AirbyteMessage::Catalog {
-            catalog: configured_airbyte_catalog,
-        } = serde_json::from_str(&catalog_json)?
-        else {
-            return Err(anyhow!("No catalog in catalog file."));
-        };
+        let configured_airbyte_catalog: ConfiguredAirbyteCatalog =
+            serde_json::from_str(&catalog_json).unwrap();
 
         let state = generate_state(plugin.clone(), &configured_airbyte_catalog).await?;
 
