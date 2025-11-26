@@ -50,7 +50,7 @@ fn field_to_arrow(datatype: &Type, name: &String) -> Field {
                     .properties
                     .iter()
                     .fold(SchemaBuilder::new(), |mut acc, (name, datatype)| {
-                        acc.push(field_to_arrow(&datatype, &name));
+                        acc.push(field_to_arrow(datatype, name));
                         acc
                     })
                     .finish()

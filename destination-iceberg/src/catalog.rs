@@ -11,6 +11,7 @@ use iceberg_rust::spec::arrow::schema::new_fields_with_ids;
 use iceberg_rust::spec::partition::{PartitionField, PartitionSpec, Transform};
 use iceberg_rust::table::Table;
 use iceberg_rust::{catalog::identifier::Identifier, spec::schema::Schema};
+use tracing::debug;
 
 use crate::{error::Error, plugin::DestinationPlugin, schema::schema_to_arrow};
 
@@ -117,8 +118,7 @@ pub async fn configure_catalog(
                                     })
                                     .collect::<Result<_, _>>()?,
                             )
-                            .build()
-                            .map_err(iceberg_rust::spec::error::Error::from)?,
+                            .build()?,
                     );
                 }
 
@@ -142,7 +142,14 @@ pub async fn configure_catalog(
     .try_collect::<Vec<ConfiguredAirbyteStream>>()
     .await?;
 
-    Ok(ConfiguredAirbyteCatalog { streams })
+    let configured_airbyte_catalog = ConfiguredAirbyteCatalog { streams };
+
+    debug!(
+        "Airbyte catalog: {}",
+        serde_json::to_string(&configured_airbyte_catalog)?
+    );
+
+    Ok(configured_airbyte_catalog)
 }
 
 fn remove_cdc_columns(schema: &mut JsonSchema) -> Result<(), Error> {

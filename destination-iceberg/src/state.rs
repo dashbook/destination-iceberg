@@ -6,6 +6,7 @@ use airbyte_protocol::message::{
 };
 use futures::{lock::Mutex, stream, StreamExt, TryStreamExt};
 use iceberg_rust::catalog::{identifier::Identifier, tabular::Tabular};
+use tracing::debug;
 
 use crate::{catalog::DEFAULT_NAMESPACE, error::Error, plugin::DestinationPlugin};
 
@@ -76,22 +77,26 @@ pub async fn generate_state(
             stream_state: serde_json::from_str(&value).unwrap(),
         });
 
-    if let Some(shared_state) = shared_state {
-        Ok(vec![AirbyteStateMessage::Global {
+    let state = if let Some(shared_state) = shared_state {
+        vec![AirbyteStateMessage::Global {
             global: AirbyteGlobalState {
                 shared_state,
                 stream_states: stream_states.collect(),
             },
             destination_stats: None,
             source_stats: None,
-        }])
+        }]
     } else {
-        Ok(stream_states
+        stream_states
             .map(|stream| AirbyteStateMessage::Stream {
                 stream,
                 destination_stats: None,
                 source_stats: None,
             })
-            .collect())
-    }
+            .collect()
+    };
+
+    debug!("Airbyte state: {}", serde_json::to_string(&state)?);
+
+    Ok(state)
 }
