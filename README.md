@@ -32,14 +32,14 @@ Example:
 
 ```json
 {
-    "catalogName": "bronze",
-    "catalogUrl": "postgres://postgres:postgres@postgres:5432",
+    "catalog_name": "bronze",
+    "catalog_url": "postgres://postgres:postgres@postgres:5432",
     "bucket": "s3://example-postgres",
-    "awsRegion": "us-east-1",
-    "awsAccessKeyId": "AKIAIOSFODNN7EXAMPLE",
-    "awsSecretAccessKey": "$AWS_SECRET_ACCESS_KEY",
-    "awsEndpoint": "http://localstack:4566",
-    "awsAllowHttp": "true"
+    "aws_region": "us-east-1",
+    "aws_access_key_id": "AKIAIOSFODNN7EXAMPLE",
+    "aws_secret_access_key": "$AWS_SECRET_ACCESS_KEY",
+    "aws_endpoint": "http://localstack:4566",
+    "aws_allow_http": "true"
 }
 ```
 
@@ -67,8 +67,8 @@ Only one set of catalog parameters should be used in the configuration. Choose w
 
 | Parameter | Description |
 |-|-|  
-| `catalogName` | The name of the catalog |
-| `catalogUrl` | The connection url of the catalog |
+| `catalog_name` | The name of the catalog |
+| `catalog_url` | The connection url of the catalog |
 
 
 ### Object store parameters
@@ -79,17 +79,18 @@ Only one set of object store parameters should be used in the configuration. Cho
 
 | Parameter | Description |
 |-|-|  
-| `awsRegion` | The region of the bucket |
-| `awsAccessKeyId` | The access key id |
-| `awsSecretAccessKey` | The secret access key |
-| `awsEndpoint` (optional) | The endpoint of the object store |
-| `awsAllowHttp` (optional) | Allow http connections to the object store |
+| `aws_region` | The region of the bucket |
+| `aws_access_key_id` | The access key id |
+| `aws_secret_access_key` | The secret access key |
+| `aws_endpoint` (optional) | The endpoint of the object store |
+| `aws_allow_http` (optional) | Allow http connections to the object store |
 
 
 
 ## Docker containers
 
 - [dashbook/destination-iceberg:sql](https://hub.docker.com/r/dashbook/destination-iceberg)
+- [dashbook/destination-iceberg:file](https://hub.docker.com/r/dashbook/destination-iceberg)
 
 ## Contributing
 

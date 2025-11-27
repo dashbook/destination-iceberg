@@ -15,7 +15,7 @@ use object_store::aws::AmazonS3Builder;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "snake_case")]
 pub struct Config {
     #[serde(flatten)]
     pub base: BaseConfig,

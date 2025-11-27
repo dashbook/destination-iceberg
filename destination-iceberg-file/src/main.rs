@@ -127,7 +127,7 @@ mod tests {
             .write_all(
                 (r#"
             {
-            "catalogUrl": ""#
+            "catalog_url": ""#
                     .to_string()
                     + tempdir.path().to_str().unwrap()
                     + r#""
@@ -278,7 +278,7 @@ mod tests {
         config_file.write_all(
             (r#"
             {
-            "catalogUrl": ""#
+            "catalog_url": ""#
                 .to_string()
                 + tempdir.path().to_str().unwrap()
                 + r#""
@@ -413,7 +413,7 @@ mod tests {
         config_file.write_all(
             (r#"
             {
-            "catalogUrl": ""#
+            "catalog_url": ""#
                 .to_string()
                 + tempdir.path().to_str().unwrap()
                 + r#""

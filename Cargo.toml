@@ -11,7 +11,7 @@ airbyte-protocol = "0.1.0"
 arrow = "56"
 async-trait = "0.1"
 object_store = { version = "0.12", features = ["aws", "gcp"] }
-dashtool-common = "0.1"
+dashtool-common = "0.2"
 futures = "0.3.30"
 iceberg-rust = "0.9.0"
 serde = { version = "1", features = ["derive"] }

@@ -118,11 +118,11 @@ mod tests {
         config_file.write_all(
             (r#"
             {
-            "catalogUrl": "sqlite://"#
+            "catalog_url": "sqlite://"#
                 .to_string()
                 + tempdir.path().join("iceberg.db").to_str().unwrap()
                 + r#"?mode=rwc",
-            "catalogName": "public"
+            "catalog_name": "public"
             }
         "#)
             .as_bytes(),
@@ -254,11 +254,11 @@ mod tests {
         config_file.write_all(
             (r#"
             {
-            "catalogUrl": "sqlite://"#
+            "catalog_url": "sqlite://"#
                 .to_string()
                 + tempdir.path().join("iceberg.db").to_str().unwrap()
                 + r#"?mode=rwc",
-            "catalogName": "public"
+            "catalog_name": "public"
             }
         "#)
             .as_bytes(),
@@ -390,11 +390,11 @@ mod tests {
         config_file.write_all(
             (r#"
             {
-            "catalogUrl": "sqlite://"#
+            "catalog_url": "sqlite://"#
                 .to_string()
                 + tempdir.path().join("iceberg.db").to_str().unwrap()
                 + r#"?mode=rwc",
-            "catalogName": "public",
+            "catalog_name": "public",
             "namespace": "default"
             }
         "#)
